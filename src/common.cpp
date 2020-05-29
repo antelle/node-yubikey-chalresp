@@ -6,7 +6,6 @@
 #include <ykdef.h>
 #include <ykcore.h>
 #include <ykstatus.h>
-#include <ykpers-version.h>
 
 #include "common.h"
 

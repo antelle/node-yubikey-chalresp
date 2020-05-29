@@ -1,11 +1,10 @@
 const {
     version,
-    ykpersVersion,
     getYubiKeys,
     challengeResponse
 } = require('../');
 
-console.log(`node-yubikey-otp v${version}, ykpers v${ykpersVersion}`);
+console.log(`node-yubikey-otp v${version}`);
 
 const yubiKeys = getYubiKeys((err, yubiKeys) => {
     if (err) {

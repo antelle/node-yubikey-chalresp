@@ -1,7 +1,6 @@
 #include <napi.h>
 
 #include <ykcore.h>
-#include <ykpers-version.h>
 
 #include "common.h"
 #include "get-yubikeys.h"
@@ -19,7 +18,6 @@ Napi::Object init(Napi::Env env, Napi::Object exports) {
     }
 
     exports.Set("version", Napi::String::New(env, ADDON_VERSION));
-    exports.Set("ykpersVersion", Napi::String::New(env, YKPERS_VERSION_STRING));
 
     exports.Set("getYubiKeys", Napi::Function::New(env, getYubiKeys));
     exports.Set("challengeResponse", Napi::Function::New(env, challengeResponse));

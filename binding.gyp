@@ -1,24 +1,24 @@
 {
-  "targets": [
+  'targets': [
     {
-      "target_name": "yubikey-otp",
-      "cflags!": [ "-fno-exceptions" ],
-      "cflags_cc!": [ "-fno-exceptions" ],
-      "sources": [
-        "src/addon.cpp",
-        "src/common.cpp",
-        "src/get-yubikeys.cpp",
-        "src/challenge-response.cpp"
+      'target_name': 'yubikey-otp',
+      'cflags!': [ '-fno-exceptions' ],
+      'cflags_cc!': [ '-fno-exceptions' ],
+      'sources': [
+        'src/addon.cpp',
+        'src/common.cpp',
+        'src/get-yubikeys.cpp',
+        'src/challenge-response.cpp',
+
+        'yubico-c/ykcrc.c',
+
+        'yubikey-personalization/ykcore/ykcore.c',
+        'yubikey-personalization/ykcore/ykstatus.c'
       ],
-      "include_dirs": [
-        "<(module_root_dir)/node_modules/node-addon-api",
-        "<(module_root_dir)/yubikey-personalization",
-        "<(module_root_dir)/yubikey-personalization/ykcore"
-      ],
-      'libraries': [
-        '<(module_root_dir)/yubikey-personalization/ykcore/.libs/libykcore.a',
-        '<(module_root_dir)/yubikey-personalization/.libs/libykpers-1.a',
-        '<(module_root_dir)/yubico-c/.libs/libyubikey.a'
+      'include_dirs': [
+        '<(module_root_dir)/node_modules/node-addon-api',
+        '<(module_root_dir)/yubikey-personalization',
+        '<(module_root_dir)/yubikey-personalization/ykcore'
       ],
       'defines': [ 'NAPI_DISABLE_CPP_EXCEPTIONS', 'ADDON_VERSION="<!(node -p "require(\'./package.json\').version")"' ],
       'conditions': [
@@ -26,6 +26,9 @@
           'LDFLAGS': [
             '-framework IOKit',
             '-framework CoreFoundation'
+          ],
+          'sources': [
+            'yubikey-personalization/ykcore/ykcore_osx.c'
           ],
           'xcode_settings': {
             'CLANG_CXX_LIBRARY': 'libc++',
@@ -37,6 +40,16 @@
             ],
           }
         }],
+        [ 'OS=="win"', {
+          'sources': [
+            'yubikey-personalization/ykcore/ykcore_windows.c'
+          ]
+        }],
+        [ 'OS=="linux"', {
+          'sources': [
+            'yubikey-personalization/ykcore/ykcore_libusb.c'
+          ]
+        }]
       ]
     }
   ]
