@@ -13,11 +13,13 @@ This is an implementation of YubiKey challenge-response OTP for node.js
 ## Installation
 
 If you're on Linux, install `libusb-1.0` dependency first:
+
 ```sh
 apt-get install libusb-1.0-0-dev
 ```
 
 Install the package from npm:
+
 ```sh
 npm i yubikey-otp
 ```
@@ -57,6 +59,7 @@ ykotp.getYubiKeys((err, yubiKeys) => {
 ### `version`
 
 Returns the version of the library
+
 ```javascript
 > ykotp.version
 '0.0.1'
@@ -107,24 +110,42 @@ Arguments:
 undefined <Buffer ...>
 ```
 
+### Error codes
+
+If an error was triggered by the YubiKey or Yubico API, it will contain the error code 
+reported by the library. The full list of error codes can be found 
+[here](src/addon.cpp#L25). Errors can be checked like this:
+
+```javascript
+ykotp.challengeResponse(yk, challenge, slot, (err, result) => {
+    if (err && err.code === ykotp.YK_ENOKEY) {
+        console.log('Please insert your YubiKey');
+    }
+});
+```
+
 ## Development
 
 Clone the repo with submodules:
+
 ```sh
 git clone git@github.com:antelle/node-yubikey-otp.git --recursive
 ```
 
 Build the addon:
+
 ```sh
 npm run build
 ```
 
 Insert your YubiKey and check if it's working:
+
 ```sh
 npm run test
 ```
 
 Iterative one-liner, convenient when you're testing something:
+
 ```sh
 npm run build-test
 ```

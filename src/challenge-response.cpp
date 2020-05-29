@@ -22,10 +22,13 @@ class ChallengeResponseThreadData {
         Napi::ThreadSafeFunction threadSafeCallback;
 
     public:
-        void errorCallback(std::string message) {
-            threadSafeCallback.BlockingCall(this, [message]
+        void errorCallback(YubiKeyError ykError) {
+            threadSafeCallback.BlockingCall(this, [ykError]
                 (Napi::Env env, Napi::Function jsCallback, ChallengeResponseThreadData* threadData) {
-                    auto err = Napi::Error::New(env, message).Value();
+                    auto err = Napi::Error::New(env, ykError.message).Value();
+                    if (ykError.code) {
+                        err.Set("code", Napi::Number::New(env, ykError.code));
+                    }
                     jsCallback.Call({ err });
                     delete threadData;
                 });

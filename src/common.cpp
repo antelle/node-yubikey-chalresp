@@ -23,7 +23,9 @@ void releaseAddonLock() {
     uv_mutex_unlock(&mutex);
 }
 
-std::string getYubiKeyError(std::string location) {
+YubiKeyError getYubiKeyError(std::string location) {
+    YubiKeyError result;
+
     constexpr size_t SIZE = 1024;
     char message[SIZE];
 
@@ -37,5 +39,8 @@ std::string getYubiKeyError(std::string location) {
         snprintf(message, SIZE, "Unexpected YubiKey API error in %s", location.c_str());
     }
 
-    return message;
+    result.message = message;
+    result.code = yk_errno;
+
+    return result;
 }

@@ -9,4 +9,9 @@ bool initAddonLock();
 void acquireAddonLock();
 void releaseAddonLock();
 
-std::string getYubiKeyError(std::string location);
+struct YubiKeyError {
+    std::string message;
+    int code;
+};
+
+YubiKeyError getYubiKeyError(std::string location);
