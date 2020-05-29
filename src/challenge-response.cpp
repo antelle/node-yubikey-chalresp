@@ -62,6 +62,7 @@ YK_KEY* openYubiKey(int vid, int pid, unsigned int serial) {
 
     for (int index = 0; index < MAX_YUBIKEYS; index++) {
         for (int attempt = 0; attempt < YUBIKEY_OPEN_ATTEMPTS; attempt++) {
+            // why? see here: https://github.com/Yubico/yubikey-personalization/issues/161
             auto yk = yk_open_key_vid_pid(vid, pids, 1, index);
             if (!yk) {
                 return nullptr;
