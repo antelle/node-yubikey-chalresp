@@ -11,7 +11,7 @@ This is an implementation of YubiKey challenge-response OTP for node.js
 
 ## Installation
 
-If you're on Linux, install dependencies:
+If you're on Linux, install `libusb-1.0` dependency first:
 ```sh
 apt-get install libusb-1.0-0-dev
 ```
