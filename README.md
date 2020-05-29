@@ -21,7 +21,7 @@ apt-get install libusb-1.0-0-dev
 Install the package from npm:
 
 ```sh
-npm i yubikey-otp
+npm i node-yubikey-otp
 ```
 
 ## Usage
