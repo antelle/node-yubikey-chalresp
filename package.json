@@ -1,10 +1,11 @@
 {
   "name": "yubikey-chalresp",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "YubiKey OTP implementation for node.js",
   "main": "build/Release/yubikey-chalresp.node",
   "scripts": {
     "preinstall": "npm i node-addon-api",
+    "install": "node-gyp rebuild",
     "test": "node test",
     "rebuild": "node-gyp clean configure build && node test",
     "clean": "node-gyp clean",
