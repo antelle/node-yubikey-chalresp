@@ -4,6 +4,7 @@
   "description": "YubiKey OTP implementation for node.js",
   "main": "build/Release/yubikey-otp.node",
   "scripts": {
+    "preinstall": "npm i node-addon-api",
     "test": "node test",
     "rebuild": "node-gyp clean configure build && node test",
     "clean": "node-gyp clean",

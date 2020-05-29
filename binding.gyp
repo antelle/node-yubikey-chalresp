@@ -16,7 +16,7 @@
         'yubikey-personalization/ykcore/ykstatus.c'
       ],
       'include_dirs': [
-        '<(module_root_dir)/node_modules/node-addon-api',
+        '<!@(node -p "require(\'node-addon-api\').include"),
         '<(module_root_dir)/yubikey-personalization',
         '<(module_root_dir)/yubikey-personalization/ykcore',
         '<(module_root_dir)/yubico-c'
