@@ -6,8 +6,9 @@ This is an implementation of YubiKey challenge-response OTP for node.js
 
 - fast native implementation using yubico-c and ykpers
 - non-blocking API, I/O is performed in a separate thread
-- thread-safe library, locking is performed inside
+- thread-safe library, locking is done inside
 - no additional JavaScript, all you need is the `.node` file
+- no runtime dependencies
 
 ## Installation
 
