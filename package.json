@@ -1,6 +1,6 @@
 {
   "name": "node-yubikey-otp",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "YubiKey OTP implementation for node.js",
   "main": "build/Release/yubikey-otp.node",
   "scripts": {

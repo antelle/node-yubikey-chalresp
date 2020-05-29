@@ -20,7 +20,7 @@
         '<(module_root_dir)/yubikey-personalization/.libs/libykpers-1.a',
         '<(module_root_dir)/yubico-c/.libs/libyubikey.a'
       ],
-      'defines': [ 'NAPI_DISABLE_CPP_EXCEPTIONS' ],
+      'defines': [ 'NAPI_DISABLE_CPP_EXCEPTIONS', 'ADDON_VERSION="<!(node -p "require(\'./package.json\').version")"' ],
       'conditions': [
         [ 'OS=="mac"', {
           'LDFLAGS': [
