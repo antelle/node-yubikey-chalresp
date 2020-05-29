@@ -6,11 +6,13 @@ This is an implementation of YubiKey challenge-response OTP for node.js
 
 - fast native implementation using yubico-c and ykpers
 - non-blocking API, I/O is performed in a separate thread
+- thread-safe library
 
 ## Installation
 
 The package can be installed from npm:
-```
+
+```sh
 npm i yubikey-otp
 ```
 
@@ -107,6 +109,45 @@ Arguments:
     Buffer.from('aa', 'hex'), 2, (err, result) => console.log(err, result))
 [Error: Touch requested] { touchRequested: true } undefined
 undefined <Buffer ...>
+```
+
+## Development
+
+Clone the repo with submodules:
+
+```sh
+git clone git@github.com:antelle/node-yubikey-otp.git --recursive
+```
+
+Build `yubikey-personalization` ([official instructions](https://github.com/Yubico/yubikey-personalization#building-from-git)):
+
+```sh
+cd yubikey-personalization
+autoreconf --install
+./configure
+make check install
+cd ..
+```
+
+Build `yubico-c` ([official guide](https://github.com/Yubico/yubico-c#building)):
+
+```sh
+cd yubico-c
+autoreconf --install
+./configure
+make check
+cd ..
+```
+
+Finally build the addon:
+
+```sh
+npm run build
+```
+
+Insert your YubiKey and check if it's working:
+```sh
+npm run test
 ```
 
 ## License
