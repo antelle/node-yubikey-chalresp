@@ -49,6 +49,9 @@
         [ 'OS=="linux"', {
           'sources': [
             'yubikey-personalization/ykcore/ykcore_libusb-1.0.c'
+          ],
+          'cflags': [
+            '<!(pkg-config --cflags libusb-1.0)'
           ]
         }]
       ]
