@@ -7,12 +7,16 @@ This is an implementation of YubiKey challenge-response OTP for node.js
 - fast native implementation using yubico-c and ykpers
 - non-blocking API, I/O is performed in a separate thread
 - thread-safe library, locking is performed inside
-- no additional dependencies and code, all you need is the `.node` file
+- no additional JavaScript, all you need is the `.node` file
 
 ## Installation
 
-The package can be installed from npm:
+If you're on Linux, install dependencies:
+```sh
+apt-get install libusb-1.0-0-dev
+```
 
+Install the package from npm:
 ```sh
 npm i yubikey-otp
 ```
@@ -52,7 +56,6 @@ ykotp.getYubiKeys((err, yubiKeys) => {
 ### `version`
 
 Returns the version of the library
-
 ```javascript
 > ykotp.version
 '0.0.1'
@@ -106,13 +109,11 @@ undefined <Buffer ...>
 ## Development
 
 Clone the repo with submodules:
-
 ```sh
 git clone git@github.com:antelle/node-yubikey-otp.git --recursive
 ```
 
 Build the addon:
-
 ```sh
 npm run build
 ```

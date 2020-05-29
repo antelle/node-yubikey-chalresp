@@ -18,7 +18,8 @@
       'include_dirs': [
         '<(module_root_dir)/node_modules/node-addon-api',
         '<(module_root_dir)/yubikey-personalization',
-        '<(module_root_dir)/yubikey-personalization/ykcore'
+        '<(module_root_dir)/yubikey-personalization/ykcore',
+        '<(module_root_dir)/yubico-c'
       ],
       'defines': [ 'NAPI_DISABLE_CPP_EXCEPTIONS', 'ADDON_VERSION="<!(node -p "require(\'./package.json\').version")"' ],
       'conditions': [
@@ -47,7 +48,7 @@
         }],
         [ 'OS=="linux"', {
           'sources': [
-            'yubikey-personalization/ykcore/ykcore_libusb.c'
+            'yubikey-personalization/ykcore/ykcore_libusb-1.0.c'
           ]
         }]
       ]
