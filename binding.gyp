@@ -50,8 +50,11 @@
           'sources': [
             'yubikey-personalization/ykcore/ykcore_libusb-1.0.c'
           ],
-          'cflags': [
-            '<!(pkg-config --cflags libusb-1.0)'
+          'include_dirs': [
+            '<!(pkg-config libusb-1.0 --cflags-only-I | sed s/-I//g)'
+          ],
+          'libraries': [
+            '<!(pkg-config libusb-1.0 --libs)'
           ]
         }]
       ]
