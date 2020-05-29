@@ -98,7 +98,7 @@ Arguments:
         In this case the same callback will be called once again in the end!
 
 ```javascript
-> ykotp.challengeResponse({ vid: 4176, pid: 1031, serial: 12345678 },
+ykotp.challengeResponse({ vid: 4176, pid: 1031, serial: 12345678 },
     Buffer.from('aa', 'hex'), 2, (err, result) => console.log(err, result))
 > [Error: Touch requested] { touchRequested: true } undefined
 > undefined <Buffer ...>
