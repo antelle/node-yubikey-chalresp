@@ -44,7 +44,12 @@
         [ 'OS=="win"', {
           'sources': [
             'yubikey-personalization/ykcore/ykcore_windows.c'
-          ]
+          ],
+          'msvs_settings': {
+            'VCLinkerTool': {
+              'AdditionalDependencies': ['HID.lib', 'setupapi.lib']
+            }
+          }
         }],
         [ 'OS=="linux"', {
           'sources': [
