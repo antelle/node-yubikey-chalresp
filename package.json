@@ -1,0 +1,17 @@
+{
+  "name": "node-yubikey-otp",
+  "version": "1.0.0",
+  "description": "YubiKey OTP implementation for node.js",
+  "main": "build/Release/yubikey-otp.node",
+  "scripts": {
+    "test": "node ./test/",
+    "rebuild": "node-gyp rebuild",
+    "build": "node-gyp build",
+    "build-test": "node-gyp build && node ./test/"
+  },
+  "author": "Antelle",
+  "license": "MIT",
+  "dependencies": {
+    "node-addon-api": "^3.0.0"
+  }
+}
