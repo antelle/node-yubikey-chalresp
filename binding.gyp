@@ -1,7 +1,7 @@
 {
   'targets': [
     {
-      'target_name': 'yubikey-otp',
+      'target_name': 'yubikey-chalresp',
       'cflags!': [ '-fno-exceptions' ],
       'cflags_cc!': [ '-fno-exceptions' ],
       'sources': [

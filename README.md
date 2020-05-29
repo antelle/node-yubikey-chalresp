@@ -21,23 +21,23 @@ apt-get install libusb-1.0-0-dev
 Install the package from npm:
 
 ```sh
-npm i node-yubikey-otp
+npm i yubikey-chalresp
 ```
 
 ## Usage
 
 ```javascript
-const ykotp = require('yubikey-otp');
+const ykchalresp = require('yubikey-chalresp');
 
 // Get a list of connected YubiKeys
-ykotp.getYubiKeys((err, yubiKeys) => {
+ykchalresp.getYubiKeys((err, yubiKeys) => {
     // Select one of them and pass it to the challenge-response function
     const yubiKey = yubiKeys[0];
 
     const challenge = Buffer.from('aa', 'hex');
     const slot = 2;
 
-    ykotp.challengeResponse(yubiKey, challenge, slot, (err, response) => {
+    ykchalresp.challengeResponse(yubiKey, challenge, slot, (err, response) => {
         if (err) {
             if (err.touchRequested) {
                 // Present the touch UI or show a message in the terminal
@@ -61,7 +61,7 @@ ykotp.getYubiKeys((err, yubiKeys) => {
 Returns the version of the library
 
 ```javascript
-> ykotp.version
+> ykchalresp.version
 '0.0.1'
 ```
 
@@ -73,7 +73,7 @@ Arguments:
 - `callback`: callback that will be called once the list is retrieved
 
 ```javascript
-> ykotp.getYubiKeys((err, yubiKeys) => console.log(yubiKeys))
+> ykchalresp.getYubiKeys((err, yubiKeys) => console.log(yubiKeys))
 [
   {
     serial: 12345678,
@@ -104,7 +104,7 @@ Arguments:
         In this case the same callback will be called once again in the end!
 
 ```javascript
-> ykotp.challengeResponse({ vid: 4176, pid: 1031, serial: 12345678 },
+> ykchalresp.challengeResponse({ vid: 4176, pid: 1031, serial: 12345678 },
     Buffer.from('aa', 'hex'), 2, (err, result) => console.log(err, result))
 [Error: Touch requested] { touchRequested: true } undefined
 undefined <Buffer ...>
@@ -117,8 +117,8 @@ reported by the library. The full list of error codes can be found
 [here](src/addon.cpp#L25). Errors can be checked like this:
 
 ```javascript
-ykotp.challengeResponse(yk, challenge, slot, (err, result) => {
-    if (err && err.code === ykotp.YK_ENOKEY) {
+ykchalresp.challengeResponse(yk, challenge, slot, (err, result) => {
+    if (err && err.code === ykchalresp.YK_ENOKEY) {
         console.log('Please insert your YubiKey');
     }
 });
@@ -129,7 +129,7 @@ ykotp.challengeResponse(yk, challenge, slot, (err, result) => {
 Clone the repo with submodules:
 
 ```sh
-git clone git@github.com:antelle/node-yubikey-otp.git --recursive
+git clone git@github.com:antelle/node-yubikey-chalresp.git --recursive
 ```
 
 Build the addon:

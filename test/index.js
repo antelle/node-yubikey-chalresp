@@ -4,7 +4,7 @@ const {
     challengeResponse
 } = require('../');
 
-console.log(`node-yubikey-otp v${version}`);
+console.log(`yubikey-chalresp v${version}`);
 
 const yubiKeys = getYubiKeys((err, yubiKeys) => {
     if (err) {
