@@ -2,6 +2,11 @@
 
 This is an implementation of YubiKey challenge-response OTP for node.js
 
+## Features
+
+- fast native implementation using yubico-c and ykpers
+- non-blocking API, I/O is performed in a separate thread
+
 ## Installation
 
 The package can be installed from npm:
