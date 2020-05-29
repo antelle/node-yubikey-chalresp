@@ -7,7 +7,7 @@
 #include <ykstatus.h>
 
 #include <set>
-#include <iostream>
+#include <vector>
 
 #include "common.h"
 #include "get-yubikeys.h"
@@ -113,6 +113,7 @@ void getYubiKeys(const Napi::CallbackInfo& info) {
                 }
 
                 if (!yk_get_serial(yk, 1, 0, &yubiKeyInfo.serial)) {
+                    yk_close_key(yk);
                     threadData->errorCallback(getYubiKeyError("yk_get_serial"));
                     return;
                 }
@@ -123,6 +124,7 @@ void getYubiKeys(const Napi::CallbackInfo& info) {
             }
 
             if (serialMap.find(yubiKeyInfo.serial) != serialMap.end()) {
+                yk_close_key(yk);
                 threadData->errorCallback(getYubiKeyError("check_unique_serial"));
                 return;
             }
@@ -130,6 +132,7 @@ void getYubiKeys(const Napi::CallbackInfo& info) {
             serialMap.insert(yubiKeyInfo.serial);
 
             if (!yk_get_key_vid_pid(yk, &yubiKeyInfo.vid, &yubiKeyInfo.pid)) {
+                yk_close_key(yk);
                 threadData->errorCallback(getYubiKeyError("yk_get_key_vid_pid"));
                 return;
             }
@@ -137,6 +140,7 @@ void getYubiKeys(const Napi::CallbackInfo& info) {
             YK_STATUS *st = ykds_alloc();
             if (!yk_get_status(yk, st)) {
                 ykds_free(st);
+                yk_close_key(yk);
                 threadData->errorCallback(getYubiKeyError("yk_get_status"));
                 return;
             }

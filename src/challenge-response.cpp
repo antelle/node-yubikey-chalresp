@@ -7,7 +7,7 @@
 #include <ykstatus.h>
 
 #include <set>
-#include <iostream>
+#include <vector>
 
 #include "common.h"
 #include "challenge-response.h"
