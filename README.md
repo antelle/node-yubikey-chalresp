@@ -1,4 +1,4 @@
-# YubiKey OTP for node.js
+# YubiKey challenge-response for node.js
 
 This is an implementation of YubiKey challenge-response OTP for node.js
 
