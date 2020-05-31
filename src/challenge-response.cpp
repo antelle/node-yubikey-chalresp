@@ -12,6 +12,9 @@
 #include "common.h"
 #include "challenge-response.h"
 
+uv_mutex_t chalRespKeyMutex;
+YK_KEY* chalRespKey = nullptr;
+
 class ChallengeResponseThreadData {
     public:
         int vid;
@@ -80,6 +83,16 @@ YK_KEY* openYubiKey(int vid, int pid, unsigned int serial) {
     }
 
     return nullptr;
+}
+
+bool initChallengeResponse() {
+    return !uv_mutex_init(&chalRespKeyMutex);
+}
+
+void setChalRespKey(YK_KEY* yk) {
+    uv_mutex_lock(&chalRespKeyMutex);
+    chalRespKey = yk;
+    uv_mutex_unlock(&chalRespKeyMutex);
 }
 
 void challengeResponse(const Napi::CallbackInfo& info) {
@@ -174,14 +187,18 @@ void challengeResponse(const Napi::CallbackInfo& info) {
         ) {
             if (yk_errno == YK_EWOULDBLOCK) {
                 threadData->touchCallback();
+                setChalRespKey(yk);
+
                 if (!yk_challenge_response(yk, cmd, true,
                     threadData->challenge.size(), threadData->challenge.data(),
                     response.size(), response.data())
                 ) {
+                    setChalRespKey(nullptr);
                     yk_close_key(yk);
                     threadData->errorCallback(getYubiKeyError("yk_challenge_response"));
                     return;
                 }
+                setChalRespKey(nullptr);
             } else {
                 yk_close_key(yk);
                 threadData->errorCallback(getYubiKeyError("yk_challenge_response"));
@@ -194,4 +211,19 @@ void challengeResponse(const Napi::CallbackInfo& info) {
         response = std::vector<unsigned char>(response.begin(), response.begin() + SHA1_DIGEST_SIZE);
         threadData->successCallback(response);
     }, threadData);
+}
+
+void cancelChallengeResponse(const Napi::CallbackInfo& info) {
+    if (!chalRespKey) {
+        return;
+    }
+
+    uv_thread_t tid;
+    uv_thread_create(&tid, [](void* data) {
+        uv_mutex_lock(&chalRespKeyMutex);
+        if (chalRespKey) {
+            yk_force_key_update(chalRespKey);
+        }
+        uv_mutex_unlock(&chalRespKeyMutex);
+    }, nullptr);
 }

@@ -9,6 +9,7 @@ This is an implementation of YubiKey challenge-response OTP for node.js
 - thread-safe library, locking is done inside
 - no additional JavaScript, all you need is the `.node` file
 - no runtime dependencies
+- possibility to cancel pending challenge-response
 
 ## Installation
 
@@ -81,10 +82,12 @@ Arguments:
     pid: 1031,
     version: '5.2.4',
     slot1: true,
+    slot2: true,
     slot2: true
   }
 ]
 ```
+
 
 ### `challengeResponse`
 
@@ -109,6 +112,16 @@ Arguments:
 [Error: Touch requested] { touchRequested: true } undefined
 undefined <Buffer ...>
 ```
+
+### `cancelChallengeResponse`
+
+Cancels pending challenge-response operation and makes the YubiKey stop blinking.
+Since we're always taking an exclusive lock, there can be only one challenge-response 
+in progress, so there are no extra parameters here.
+
+The function always succeeds and doesn't reutrn any value, the result is handled in async way.
+Please note that due to race conditions you may still get a successful response if a YubiKey was pressed at the same moment. If the operation was successfully canceled, 
+you will get an error with `YK_ETIMEOUT` error code.
 
 ### Error codes
 

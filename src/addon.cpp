@@ -17,10 +17,16 @@ Napi::Object init(Napi::Env env, Napi::Object exports) {
         return exports;
     }
 
+    if (!initChallengeResponse()) {
+        Napi::Error::New(env, "Challenge response init failed").ThrowAsJavaScriptException();
+        return exports;
+    }
+
     exports.Set("version", Napi::String::New(env, ADDON_VERSION));
 
     exports.Set("getYubiKeys", Napi::Function::New(env, getYubiKeys));
     exports.Set("challengeResponse", Napi::Function::New(env, challengeResponse));
+    exports.Set("cancelChallengeResponse", Napi::Function::New(env, cancelChallengeResponse));
 
     exports.Set("YK_EUSBERR", Napi::Number::New(env, YK_EUSBERR));
     exports.Set("YK_EWRONGSIZ", Napi::Number::New(env, YK_EWRONGSIZ));
