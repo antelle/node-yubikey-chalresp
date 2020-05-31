@@ -19,6 +19,7 @@ struct YubiKeyInfo {
     std::string version;
     bool slot1;
     bool slot2;
+    std::vector<unsigned char> capabilities;
 };
 
 class GetYubiKeysThreadData {
@@ -54,6 +55,11 @@ class GetYubiKeysThreadData {
                         ykObj.Set("version", Napi::String::New(env, yk.version));
                         ykObj.Set("slot1", Napi::Boolean::New(env, yk.slot1));
                         ykObj.Set("slot2", Napi::Boolean::New(env, yk.slot2));
+                        if (!yk.capabilities.empty()) {
+                            auto capBuffer = Napi::Buffer<unsigned char>::Copy(env,
+                                yk.capabilities.data(), yk.capabilities.size());
+                            ykObj.Set("capabilities", capBuffer);
+                        }
 
                         yubiKeys.Set(yubiKeys.Length(), ykObj);
                     }
@@ -146,8 +152,11 @@ void getYubiKeys(const Napi::CallbackInfo& info) {
             }
 
             char version[32];
-            snprintf(version, 32, "%d.%d.%d",
-                ykds_version_major(st), ykds_version_minor(st), ykds_version_build(st));
+            auto vMajor = ykds_version_major(st);
+            auto vMinor = ykds_version_minor(st);
+            auto vBuild = ykds_version_build(st);
+
+            snprintf(version, 32, "%d.%d.%d", vMajor, vMinor, vBuild);
             yubiKeyInfo.version = version;
             
             auto touchLevel = ykds_touch_level(st);
@@ -157,13 +166,13 @@ void getYubiKeys(const Napi::CallbackInfo& info) {
 
             ykds_free(st);
 
-            // // This times out, as well as `ykinfo -c`
-            // unsigned char capData[0xff];
-            // unsigned int capLen = 0xff;
-            // if (!yk_get_capabilities(yk, 1, 0, capData, &capLen)) {
-            //     throwYubiKeyError(env, "yk_get_capabilities");
-            //     return result;
-            // }
+            if (vMajor > 4 || (vMajor == 4 && vMinor >= 1)) {
+                unsigned char capData[0xff];
+                unsigned int capLen = 0xff;
+                if (yk_get_capabilities(yk, 1, 0, capData, &capLen)) {
+                    yubiKeyInfo.capabilities = std::vector<unsigned char>(capData, capData + capLen);
+                }
+            }
 
             yk_close_key(yk);
 
