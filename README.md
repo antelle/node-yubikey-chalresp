@@ -149,7 +149,7 @@ git clone git@github.com:antelle/node-yubikey-chalresp.git --recursive
 Build the addon:
 
 ```sh
-npm run build
+npm run rebuild
 ```
 
 Insert your YubiKey and check if it's working:
