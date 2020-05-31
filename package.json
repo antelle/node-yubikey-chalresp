@@ -1,6 +1,6 @@
 {
   "name": "yubikey-chalresp",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "YubiKey OTP implementation for node.js",
   "main": "build/Release/yubikey-chalresp.node",
   "scripts": {

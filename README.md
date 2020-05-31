@@ -83,11 +83,12 @@ Arguments:
     version: '5.2.4',
     slot1: true,
     slot2: true,
-    slot2: true
+    capabilities: <Buffer ...>
   }
 ]
 ```
 
+`capabilities` are not always there, some YubiKeys don't provide them.
 
 ### `challengeResponse`
 
