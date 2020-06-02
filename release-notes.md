@@ -1,5 +1,8 @@
 Release notes
 -------------
+##### v0.3.0 (2020-06-01)
+`+` added `options` to `getYubiKeys`  
+
 ##### v0.2.0 (2020-05-31)
 `+` added `capabilities` to the YubiKey object  
 `+` `cancelChallengeResponse` method  
