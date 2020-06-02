@@ -71,18 +71,24 @@ Returns the version of the library
 Gets the list of connected YubiKeys
 
 Arguments:
+- `options`: object with possible parameters:
+    - `getCapabilities`: read `capabilities` from YubiKeys
+    - `testSlots`: perform a test challenge instead of relying on the config
 - `callback`: callback that will be called once the list is retrieved
 
 ```javascript
-> ykchalresp.getYubiKeys((err, yubiKeys) => console.log(yubiKeys))
+const options = { getCapabilities: true, testSlots: true };
+> ykchalresp.getYubiKeys(options, (err, yubiKeys) => console.log(yubiKeys))
 [
   {
     serial: 12345678,
     vid: 4176,
     pid: 1031,
     version: '5.2.4',
-    slot1: true,
-    slot2: true,
+    slots: [
+      { number: 1, valid: true, touch: true },
+      { number: 2, valid: true, touch: false }
+    ]
     capabilities: <Buffer ...>
   }
 ]

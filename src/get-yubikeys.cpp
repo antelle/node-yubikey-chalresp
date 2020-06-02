@@ -12,19 +12,26 @@
 #include "common.h"
 #include "get-yubikeys.h"
 
+struct YubiKeySlot {
+    int number;
+    bool valid;
+    bool touch;
+};
+
 struct YubiKeyInfo {
     int vid;
     int pid;
     unsigned int serial;
     std::string version;
-    bool slot1;
-    bool slot2;
+    std::vector<YubiKeySlot> slots;
     std::vector<unsigned char> capabilities;
 };
 
 class GetYubiKeysThreadData {
     public:
         Napi::ThreadSafeFunction threadSafeCallback;
+        bool getCapabilities;
+        bool testSlots;
 
     public:
         void errorCallback(YubiKeyError ykError) {
@@ -49,12 +56,24 @@ class GetYubiKeysThreadData {
                     for (auto &yk: result) {
                         auto ykObj = Napi::Object::New(env);
 
+                        auto slotsArray = Napi::Array::New(env);
+
                         ykObj.Set("serial", Napi::Number::New(env, yk.serial));
                         ykObj.Set("vid", Napi::Number::New(env, yk.vid));
                         ykObj.Set("pid", Napi::Number::New(env, yk.pid));
                         ykObj.Set("version", Napi::String::New(env, yk.version));
-                        ykObj.Set("slot1", Napi::Boolean::New(env, yk.slot1));
-                        ykObj.Set("slot2", Napi::Boolean::New(env, yk.slot2));
+                        ykObj.Set("slots", slotsArray);
+
+                        for (auto &slot: yk.slots) {
+                            auto slotObj = Napi::Object::New(env);
+
+                            slotObj.Set("number", Napi::Number::New(env, slot.number));
+                            slotObj.Set("valid", Napi::Boolean::New(env, slot.valid));
+                            slotObj.Set("touch", Napi::Boolean::New(env, slot.touch));
+
+                            slotsArray.Set(slotsArray.Length(), slotObj);
+                        }
+
                         if (!yk.capabilities.empty()) {
                             auto capBuffer = Napi::Buffer<unsigned char>::Copy(env,
                                 yk.capabilities.data(), yk.capabilities.size());
@@ -75,20 +94,28 @@ class GetYubiKeysThreadData {
 void getYubiKeys(const Napi::CallbackInfo& info) {
     auto env = info.Env();
 
-    if (info.Length() < 1) {
+    if (info.Length() < 2) {
         Napi::RangeError::New(env, "Not enough arguments").ThrowAsJavaScriptException();
         return;
     }
 
-    if (!info[0].IsFunction()) {
+    if (!info[0].IsObject()) {
+        Napi::TypeError::New(env, "Options is not an object").ThrowAsJavaScriptException();
+        return;
+    }
+    auto options = info[0].ToObject();
+
+    if (!info[1].IsFunction()) {
         Napi::TypeError::New(env, "Callback is not a function").ThrowAsJavaScriptException();
         return;
     }
 
-    auto callback = info[0].As<Napi::Function>();
+    auto callback = info[1].As<Napi::Function>();
 
     auto threadData = new GetYubiKeysThreadData();
     threadData->threadSafeCallback = Napi::ThreadSafeFunction::New(env, callback, "callback", 0, 1);
+    threadData->getCapabilities = options.Get("getCapabilities").ToBoolean();
+    threadData->testSlots = options.Get("testSlots").ToBoolean();
 
     uv_thread_t tid;
     uv_thread_create(&tid, [](void* data) {
@@ -161,16 +188,54 @@ void getYubiKeys(const Napi::CallbackInfo& info) {
             
             auto touchLevel = ykds_touch_level(st);
 
-            yubiKeyInfo.slot1 = (touchLevel & CONFIG1_VALID) == CONFIG1_VALID;
-            yubiKeyInfo.slot2 = (touchLevel & CONFIG2_VALID) == CONFIG2_VALID;
+            for (int slotNum = 1; slotNum <= 2; slotNum++) {
+                YubiKeySlot slot;
+
+                slot.number = slotNum;
+
+                auto slotConfigValid = slotNum == 1 ? CONFIG1_VALID : CONFIG2_VALID;
+                slot.valid = (touchLevel & slotConfigValid) == slotConfigValid;
+
+                auto slotConfigTouch = slotNum == 1 ? CONFIG1_TOUCH : CONFIG2_TOUCH;
+                slot.touch = (touchLevel & slotConfigTouch) == slotConfigTouch;
+
+                if (slot.valid) {
+                    if (vMajor < 5) {
+                        // those YubiKeys always require touch
+                        slot.touch = true;
+                    } else {
+                        if (threadData->testSlots) {
+                            auto cmd = slotNum == 1 ? SLOT_CHAL_HMAC1 : SLOT_CHAL_HMAC2;
+                            unsigned char challenge[1];
+                            unsigned char response[SHA1_MAX_BLOCK_SIZE];
+                            if (yk_challenge_response(yk, cmd, false,
+                                sizeof(challenge), challenge,
+                                sizeof(response), response)
+                            ) {
+                                slot.touch = false;
+                            } else {
+                                if (yk_errno == YK_EWOULDBLOCK) {
+                                    slot.touch = true;
+                                } else {
+                                    slot.valid = false;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                yubiKeyInfo.slots.push_back(slot);
+            }
 
             ykds_free(st);
 
-            if (vMajor > 4 || (vMajor == 4 && vMinor >= 1)) {
-                unsigned char capData[0xff];
-                unsigned int capLen = 0xff;
-                if (yk_get_capabilities(yk, 1, 0, capData, &capLen)) {
-                    yubiKeyInfo.capabilities = std::vector<unsigned char>(capData, capData + capLen);
+            if (threadData->getCapabilities) {
+                if (vMajor > 4 || (vMajor == 4 && vMinor >= 1)) {
+                    unsigned char capData[0xff];
+                    unsigned int capLen = 0xff;
+                    if (yk_get_capabilities(yk, 1, 0, capData, &capLen)) {
+                        yubiKeyInfo.capabilities = std::vector<unsigned char>(capData, capData + capLen);
+                    }
                 }
             }
 

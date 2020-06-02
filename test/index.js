@@ -1,3 +1,4 @@
+const { inspect } = require('util');
 const {
     version,
     getYubiKeys,
@@ -7,11 +8,14 @@ const {
 
 console.log(`yubikey-chalresp v${version}`);
 
-const yubiKeys = getYubiKeys((err, yubiKeys) => {
+const yubiKeys = getYubiKeys({
+    // getCapabilities: true,
+    // testSlots: true
+}, (err, yubiKeys) => {
     if (err) {
         return console.log(err);
     }
-    console.log(yubiKeys);
+    console.log(inspect(yubiKeys, { depth: null }));
 
     const yubiKey = yubiKeys[0];
     const challenge = Buffer.from('aa', 'hex');
